@@ -1,6 +1,7 @@
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-public class DoubleLinkedList<T> implements Iterable {
+public class DoubleLinkedList<T> implements Iterable<T> {
     protected Element<T> head;
     protected Element<T> tail;
 
@@ -8,8 +9,10 @@ public class DoubleLinkedList<T> implements Iterable {
 
     }
 
-    public DoubleLinkedList(Iterable elements) {
-
+    public DoubleLinkedList(Iterable<T> elements) {
+        for (T i : elements) {
+            add(i);
+        }
     }
 
     public Element<T> getHead() {
@@ -22,31 +25,37 @@ public class DoubleLinkedList<T> implements Iterable {
 
     // insertAtEnd
     public void add(T val) {
-        Element<T> elt = new Element<T>(val);
-        elt.previous = this.tail;
-        this.tail = elt;
+        add(this.size(), val);
     }
 
     // insertAt
     public void add(int index, T val) {
-        Element<T> curr = this.head;
-
-        int i = 1;
-
-        while (curr != null && i < index) {
-            curr = curr.next;
-            i++;
-        }
-
-        if (curr == null) {
-            return;
-        }
-
         Element<T> elt = new Element<T>(val);
 
-        elt.previous = curr;
-        elt.next = curr.next;
-        curr.next = elt;
+        if (this.head == null) {
+            this.head = elt;
+        } else if (this.tail == null || index == this.size()) {
+            this.tail = elt;
+            elt.previous = this.head;
+            this.head.next = elt;
+        } else {
+            Element<T> curr = this.head;
+
+            int i = 1;
+
+            while (curr != null && i < index) {
+                curr = curr.next;
+                i++;
+            }
+
+            if (curr == null) {
+                return;
+            }
+
+            elt.previous = curr;
+            elt.next = curr.next;
+            curr.next = elt;
+        }
     }
 
     public void reverse() {
@@ -78,7 +87,7 @@ public class DoubleLinkedList<T> implements Iterable {
             i++;
         }
 
-        if (curr == null || i < index) {
+        if (curr == null) {
             throw new IndexOutOfBoundsException();
         }
 
@@ -112,7 +121,7 @@ public class DoubleLinkedList<T> implements Iterable {
         }
 
         Element<T> curr = this.head;
-        int i = 1;
+        int i = 0;
 
         while (curr != null) {
             curr = curr.next;
@@ -123,7 +132,35 @@ public class DoubleLinkedList<T> implements Iterable {
     }
 
     @Override
-    public Iterator iterator() {
-        return null;
+    public Iterator<T> iterator() {
+        return new LinkedListIterator();
+    }
+
+    private class LinkedListIterator implements java.util.Iterator<T> {
+        private Element<T> current;
+
+        private LinkedListIterator() {
+            this.current = head;  // from the enclosing class --
+            // ListIterator cannot be a static class
+        }
+
+        public boolean hasNext() {
+            return (this.current != null);
+        }
+
+        public T next() {
+            if (hasNext()) {
+                T result = this.current.value;
+                this.current = this.current.next;   // may be null
+
+                return result;
+            }  // no next element
+
+            throw new NoSuchElementException("linked list.next");
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException("Linked list iterator remove not supported");
+        }
     }
 }
