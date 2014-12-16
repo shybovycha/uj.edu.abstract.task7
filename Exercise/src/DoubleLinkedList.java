@@ -49,6 +49,79 @@ public class DoubleLinkedList<T> implements Iterable {
         curr.next = elt;
     }
 
+    public void reverse() {
+        Element<T> last = this.tail;
+        Element<T> curr = this.head;
+
+        while (curr != null && curr != this.tail) {
+            Element<T> tmp = curr.next;
+            last.next = curr;
+            curr.next = null;
+            curr.previous = last;
+            last = curr;
+            curr = tmp;
+        }
+
+        this.tail = last;
+    }
+
+    public T get(int index) throws IndexOutOfBoundsException {
+        if (index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        Element<T> curr = this.head;
+        int i = 0;
+
+        while (i < index && curr != null) {
+            curr = curr.next;
+            i++;
+        }
+
+        if (curr == null || i < index) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        return curr.value;
+    }
+
+    public void removeAt(int index) throws IndexOutOfBoundsException {
+        if (index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        Element<T> curr = this.head;
+        int i = 0;
+
+        while (i < index && curr != null) {
+            curr = curr.next;
+            i++;
+        }
+
+        if (curr == null || i < index) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        curr.previous.next = curr.next;
+        curr.next.previous = curr.previous;
+    }
+
+    public int size() {
+        if (this.head == null) {
+            return 0;
+        }
+
+        Element<T> curr = this.head;
+        int i = 1;
+
+        while (curr != null) {
+            curr = curr.next;
+            i++;
+        }
+
+        return i;
+    }
+
     @Override
     public Iterator iterator() {
         return null;
