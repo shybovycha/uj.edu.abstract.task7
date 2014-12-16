@@ -40,6 +40,10 @@ public class DoubleLinkedList<T> implements Iterable<T> {
             this.tail = elt;
             elt.previous = this.head;
             this.head.next = elt;
+        } else if (index == 0) {
+            this.head.previous = elt;
+            elt.next = this.head;
+            this.head = elt;
         } else {
             Element<T> curr = this.head;
 
@@ -54,8 +58,8 @@ public class DoubleLinkedList<T> implements Iterable<T> {
                 return;
             }
 
-            elt.previous = curr;
             elt.next = curr.next;
+            elt.previous = curr;
             curr.next = elt;
 
             if (setTail) {
@@ -65,19 +69,20 @@ public class DoubleLinkedList<T> implements Iterable<T> {
     }
 
     public void reverse() {
-        Element<T> last = this.tail;
-        Element<T> curr = this.head;
+        Element<T> currNew = new Element<>(this.tail.value);
+        Element<T> headNew = currNew;
+        Element<T> curr = this.tail.previous;
 
-        while (curr != null && curr != this.tail) {
-            Element<T> tmp = curr.next;
-            last.next = curr;
-            curr.next = null;
-            curr.previous = last;
-            last = curr;
-            curr = tmp;
+        while (curr != null) {
+            Element<T> tmp = new Element<>(curr.value);
+            currNew.next = tmp;
+            tmp.previous = currNew;
+            curr = curr.previous;
+            currNew = tmp;
         }
 
-        this.tail = last;
+        this.head = headNew;
+        this.tail = currNew;
     }
 
     public T get(int index) throws IndexOutOfBoundsException {
@@ -105,20 +110,41 @@ public class DoubleLinkedList<T> implements Iterable<T> {
             throw new IndexOutOfBoundsException();
         }
 
-        Element<T> curr = this.head;
-        int i = 0;
+        if (index == 0) {
+            if (this.head == null) {
+                throw new IndexOutOfBoundsException();
+            }
 
-        while (i < index && curr != null) {
-            curr = curr.next;
-            i++;
+            this.head = this.head.next;
+
+            if (this.head != null) {
+                this.head.previous = null;
+            } else {
+                this.tail = null;
+            }
+        } else if (index == this.size() - 1) {
+            if (this.tail == null) {
+                throw new IndexOutOfBoundsException();
+            }
+
+            this.tail = this.tail.previous;
+            this.tail.next = null;
+        } else {
+            Element<T> curr = this.head;
+            int i = 0;
+
+            while (i < index && curr != null) {
+                curr = curr.next;
+                i++;
+            }
+
+            if (curr == null) {
+                throw new IndexOutOfBoundsException();
+            }
+
+            curr.previous.next = curr.next;
+            curr.next.previous = curr.previous;
         }
-
-        if (curr == null || i < index) {
-            throw new IndexOutOfBoundsException();
-        }
-
-        curr.previous.next = curr.next;
-        curr.next.previous = curr.previous;
     }
 
     public int size() {
