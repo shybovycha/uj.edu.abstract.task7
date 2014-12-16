@@ -13,5 +13,9 @@ public class Main {
         System.out.printf("List at 2: %s\n", dll.get(2));
         System.out.printf("Head: %s\n", dll.getHead().getValue());
         System.out.printf("Tail: %s\n", dll.getTail().getValue());
+
+        for (Object i : dll) {
+            System.out.printf("i: %s\n", i);
+        }
     }
 }

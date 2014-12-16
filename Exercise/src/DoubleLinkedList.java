@@ -32,9 +32,11 @@ public class DoubleLinkedList<T> implements Iterable<T> {
     public void add(int index, T val) {
         Element<T> elt = new Element<T>(val);
 
+        boolean setTail = (index == this.size());
+
         if (this.head == null) {
             this.head = elt;
-        } else if (this.tail == null || index == this.size()) {
+        } else if (this.tail == null) {
             this.tail = elt;
             elt.previous = this.head;
             this.head.next = elt;
@@ -55,6 +57,10 @@ public class DoubleLinkedList<T> implements Iterable<T> {
             elt.previous = curr;
             elt.next = curr.next;
             curr.next = elt;
+
+            if (setTail) {
+                this.tail = elt;
+            }
         }
     }
 
