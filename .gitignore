@@ -1,0 +1,4 @@
+.idea
+ikvm*
+jdk*
+Tests/obj/
